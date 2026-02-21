@@ -53,29 +53,70 @@
  *   // => { name: "Haldi", form: "powder", packed: true, label: "Haldi Masala" }
  */
 export function pipe(...fns) {
-  // Your code here
+  if (fns.length === 0) {
+    return x => x; // Identity function
+  }
+  
+  return function(initialValue) {
+    return fns.reduce((acc, fn) => {
+      if (typeof fn === 'function') {
+        return fn(acc);
+      }
+      return acc; // Skip non-function
+    }, initialValue);
+  };
+
 }
 
 export function compose(...fns) {
-  // Your code here
+  if (fns.length === 0) {
+    return x => x; // Identity function
+  }
+  
+  return function(initialValue) {
+    return fns.reduceRight((acc, fn) => {
+      if (typeof fn === 'function') {
+        return fn(acc);
+      }
+      return acc; // Skip non-function
+    }, initialValue);
+  };  
+
 }
 
 export function grind(spice) {
-  // Your code here
+  return { ...spice, form: "powder" };
+
+
 }
 
 export function roast(spice) {
-  // Your code here
+  return { ...spice, roasted: true, aroma: "strong" };
+
 }
 
 export function mix(spice) {
-  // Your code here
+  return { ...spice, mixed: true };
 }
 
 export function pack(spice) {
-  // Your code here
+  return { ...spice, packed: true, label: `${spice.name} Masala` };
 }
 
 export function createRecipe(steps) {
-  // Your code here
+  if (!Array.isArray(steps)) {
+    return x => x; // Identity function
+  }
+  
+  const stepFunctions = {
+    grind,
+    roast,
+    mix,
+    pack
+  };
+  
+  const fns = steps.map(step => stepFunctions[step]).filter(fn => typeof fn === 'function');
+  
+  return pipe(...fns);
+  
 }
